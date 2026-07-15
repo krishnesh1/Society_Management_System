@@ -3,7 +3,7 @@ import { AlertTriangle, Search, Trash2, UserCheck, X, UserPlus, Loader2 } from "
 import { Empty, Panel, FormSection, Field, Input, IconButton } from "../components/ui.jsx";
 import { api } from "../services/api.js";
 
-export function ResidentPanel({ user, residents, onRemove, loading }) {
+export function ResidentPanel({ user, residents, onRemove,patchResource, loading }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredResidents, setFilteredResidents] = useState([]);
   const [toast, setToast] = useState(null);
@@ -39,11 +39,13 @@ export function ResidentPanel({ user, residents, onRemove, loading }) {
     e.preventDefault();
     setIsCreating(true);
     try {
-      await api.signup(newResident); // Calls the signup endpoint
-      showToast(`${newResident.name} added to Flat ${newResident.flatNumber} successfully!`, "success");
+      const createdResident = await api.signup(newResident); 
+      
+      patchResource("residents", (currentResidents) => [createdResident, ...currentResidents]);
+      
+      showToast(`${newResident.name} added successfully!`, "success");
       setNewResident({ name: "", email: "", password: "", flatNumber: "", phone: "", emergencyContact: "" });
       setShowSignupForm(false);
-      // Note: Ideally trigger a refresh here via a prop like `onRefresh()` to see the new resident instantly.
     } catch (err) {
       showToast(err.message || "Failed to create resident.", "error");
     } finally {
