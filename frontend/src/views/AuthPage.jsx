@@ -18,10 +18,27 @@ export function AuthPage({ onLogin }) {
 
   const update = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
 
+  // Helper for demo login
+  const handleDemoLogin = async () => {
+    setLoading(true);
+    setError("");
+    setMessage("Connecting to backend... this may take 10-30s if the server is asleep.");
+    try {
+      const payload = { email: "demoResident@gmail.com", password: "543216" };
+      const response = await api.login(payload);
+      onLogin(response.user);
+    } catch (err) {
+      setError(err.message);
+      setMessage("");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   async function submit(event) {
     event.preventDefault();
     setError("");
-    setMessage("");
+    setMessage("Connecting to backend...");
     setLoading(true);
     try {
       if (mode === "forgot") {
@@ -53,6 +70,7 @@ export function AuthPage({ onLogin }) {
       onLogin(response.user);
     } catch (err) {
       setError(err.message);
+      setMessage("");
     } finally {
       setLoading(false);
     }
@@ -159,6 +177,19 @@ export function AuthPage({ onLogin }) {
                     ? "Verify OTP"
                     : "Change password"}
             </button>
+
+            {/* DEMO LOGIN BUTTON */}
+            {mode === "login" && (
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                disabled={loading}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white text-sm font-semibold text-zinc-900 transition hover:bg-zinc-50 disabled:opacity-60"
+              >
+                Login with Demo Resident
+              </button>
+            )}
+
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
               {mode === "login" && (
                 <button
