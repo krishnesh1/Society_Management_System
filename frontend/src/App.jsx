@@ -210,7 +210,7 @@ export default function App() {
           user={user} 
           residents={data.residents}
           onRemove={actions.removeResident}
-          patchResource={patchResource}
+          onRefresh={() => refreshKeys(["residents"], user)}
           loading={viewLoading} />;
       case "Complaints":
         return (

@@ -39,11 +39,15 @@ export function ResidentPanel({ user, residents, onRemove,patchResource, loading
     e.preventDefault();
     setIsCreating(true);
     try {
-      const createdResident = await api.signup(newResident); 
-      
-      patchResource("residents", (currentResidents) => [createdResident, ...currentResidents]);
-      
+      await api.signup(newResident);
       showToast(`${newResident.name} added successfully!`, "success");
+      
+      
+      if (onRefresh) {
+        await onRefresh(); 
+      }
+      
+      
       setNewResident({ name: "", email: "", password: "", flatNumber: "", phone: "", emergencyContact: "" });
       setShowSignupForm(false);
     } catch (err) {
