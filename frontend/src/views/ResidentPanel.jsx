@@ -39,13 +39,11 @@ export function ResidentPanel({ user, residents, onRemove, loading }) {
     e.preventDefault();
     setIsCreating(true);
     try {
-      const createdResident = await api.signup(newResident); 
-      
-      patchResource("residents", (currentResidents) => [createdResident, ...currentResidents]);
-      
-      showToast(`${newResident.name} added successfully!`, "success");
+      await api.signup(newResident); // Calls the signup endpoint
+      showToast(`${newResident.name} added to Flat ${newResident.flatNumber} successfully!`, "success");
       setNewResident({ name: "", email: "", password: "", flatNumber: "", phone: "", emergencyContact: "" });
       setShowSignupForm(false);
+      // Note: Ideally trigger a refresh here via a prop like `onRefresh()` to see the new resident instantly.
     } catch (err) {
       showToast(err.message || "Failed to create resident.", "error");
     } finally {

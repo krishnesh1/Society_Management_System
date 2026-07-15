@@ -209,8 +209,7 @@ export default function App() {
         return <ResidentPanel
           user={user} 
           residents={data.residents}
-          onRemove={actions.removeResident}
-          patchResource={patchResource} 
+          onRemove={actions.removeResident} 
           loading={viewLoading} />;
       case "Complaints":
         return (
