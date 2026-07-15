@@ -104,6 +104,12 @@ export const listEvents = asyncHandler(async (req, res) => {
 
 export const createEvent = asyncHandler(async (req, res) => {
   const event = await Event.create({ ...req.body, createdBy: req.user._id });
+  await Notification.create({
+    title: `New event: ${event.title}`,
+    message: `${event.venue} - ${new Date(event.eventAt).toLocaleString()}`,
+    type: "event",
+    createdBy: req.user._id
+  });
   res.status(201).json(event);
 });
 
@@ -129,6 +135,12 @@ export const createPoll = asyncHandler(async (req, res) => {
     question: req.body.question,
     closesAt: req.body.closesAt,
     options: req.body.options.map((label) => ({ label, votes: [] })),
+    createdBy: req.user._id
+  });
+  await Notification.create({
+    title: "New poll",
+    message: poll.question,
+    type: "poll",
     createdBy: req.user._id
   });
   res.status(201).json(poll);
@@ -166,3 +178,50 @@ export const listResidents = asyncHandler(async (req, res) => {
   const residents = await User.find().select("-password").sort({ flatNumber: 1 });
   res.json(residents);
 });
+
+
+export const deletePoll = asyncHandler(async (req, res) => {
+  const poll = await Poll.findByIdAndDelete(req.params.id);
+  if (!poll) return res.status(404).json({ message: "Poll not found" });
+  res.json({ message: "Poll deleted successfully" });
+});
+
+export const addResidentToPoll = asyncHandler(async (req, res) => {
+  const { pollId, userId } = req.body;
+  const poll = await Poll.findByIdAndUpdate(
+    pollId, 
+    { $addToSet: { permittedResidents: userId } }, 
+    { new: true }
+  );
+  res.json(poll);
+});
+
+export const  removeResident = asyncHandler(async(req,res)=>{
+  try {
+    const resident = await User.findByIdAndDelete(req.params.id);
+    if (!resident) {
+      return res.status(404).json({ message: "Resident not found" });
+    }
+    res.status(200).json({ message: "Resident deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+
+})
+
+export const deleteBill = asyncHandler(async(req,res)=>{
+  try {
+    const { id } = req.params;
+    const deletedBill = await Bill.findByIdAndDelete(id);
+    
+    if (!deletedBill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+    
+    res.status(200).json({ message: "Bill deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting bill:", error);
+    res.status(500).json({ message: "Server error while deleting bill" });
+  }
+})

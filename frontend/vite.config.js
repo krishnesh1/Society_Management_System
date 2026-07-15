@@ -2,5 +2,24 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [react()]
+  plugins: [react()],
+  server: {
+    host: "0.0.0.0",
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000",
+        changeOrigin: true
+      }
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          icons: ["lucide-react"]
+        }
+      }
+    }
+  }
 });

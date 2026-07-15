@@ -1,6 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+
+
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -18,17 +22,26 @@ import pollRoutes from "./routes/pollRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import residentRoutes from "./routes/residentRoutes.js";
 
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.CLIENT_URL
+].filter(Boolean);
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
-  }),
+  })
 );
 app.use(cookieParser());
 app.use(express.json());

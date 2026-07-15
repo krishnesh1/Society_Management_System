@@ -9,8 +9,10 @@ const pollSchema = new mongoose.Schema(
         votes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
       }
     ],
+    startsAt: Date,
     closesAt: Date,
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    permittedResidents: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
   },
   { timestamps: true }
 );

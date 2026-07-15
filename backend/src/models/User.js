@@ -17,7 +17,10 @@ const userSchema = new mongoose.Schema(
       requestedAt: Date,
       reviewedAt: Date,
       reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
-    }
+    },
+    resetOtpHash: { type: String, select: false },
+    resetOtpExpiresAt: Date,
+    resetOtpVerifiedAt: Date
   },
   { timestamps: true }
 );
