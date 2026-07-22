@@ -18,7 +18,15 @@ export function VisitorTable({ user, items, onCreate, onStatus, loading }) {
         <FormSection>
           <div className="grid gap-3 sm:grid-cols-2">
             <Input required placeholder="Visitor name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            <Input required placeholder="Phone number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Input
+              required
+              placeholder="Phone number"
+              value={form.phone}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                setForm({ ...form, phone: value });
+              }}
+            />
             <Input required placeholder="Flat number" value={form.flatNumber} onChange={(e) => setForm({ ...form, flatNumber: e.target.value })} />
             <Input required placeholder="Purpose of visit" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })} />
           </div>
